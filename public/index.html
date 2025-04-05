@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Automator</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+        padding-top: 2rem;
+      }
+      .card {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+      .card-header {
+        background-color: #5c6bc0;
+        color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+      }
+      .btn-primary {
+        background-color: #5c6bc0;
+        border-color: #5c6bc0;
+      }
+      .btn-primary:hover {
+        background-color: #4a58a9;
+        border-color: #4a58a9;
+      }
+      .results {
+        max-height: 400px;
+        overflow-y: auto;
+      }
+      .help-text {
+        font-size: 0.8rem;
+        color: #6c757d;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card mb-4">
+            <div class="card-header">
+              <h2 class="mb-0">Email Automator</h2>
+            </div>
+            <div class="card-body">
+              <ul class="nav nav-tabs mb-3" id="emailTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link active"
+                    id="batch-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#batch-tab-pane"
+                    type="button"
+                    role="tab"
+                    aria-controls="batch-tab-pane"
+                    aria-selected="true"
+                  >
+                    Batch Emails
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link"
+                    id="single-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#single-tab-pane"
+                    type="button"
+                    role="tab"
+                    aria-controls="single-tab-pane"
+                    aria-selected="false"
+                  >
+                    Single Email
+                  </button>
+                </li>
+              </ul>
+
+              <div class="tab-content" id="emailTabsContent">
+                <div
+                  class="tab-pane fade show active"
+                  id="batch-tab-pane"
+                  role="tabpanel"
+                  aria-labelledby="batch-tab"
+                  tabindex="0"
+                >
+                  <!-- Batch Email Form -->
+                  <form id="batchEmailForm">
+                    <div class="mb-3">
+                      <label for="prospects" class="form-label"
+                        >Upload Prospects CSV</label
+                      >
+                      <input
+                        type="file"
+                        class="form-control"
+                        id="prospects"
+                        name="prospects"
+                        accept=".csv"
+                        required
+                      />
+                      <div class="help-text mt-1">
+                        CSV should have at least 'email' column. Optional
+                        'First_Name' (or 'name'), and 'company' columns for
+                        personalization.
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="batchAttachment" class="form-label"
+                        >Attachment (Optional)</label
+                      >
+                      <input
+                        type="file"
+                        class="form-control"
+                        id="batchAttachment"
+                        name="attachment"
+                      />
+                      <div class="help-text mt-1">
+                        Attach a file to send with all emails (max 10MB).
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="batchSubject" class="form-label"
+                        >Email Subject</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="batchSubject"
+                        name="subject"
+                        required
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="batchBody" class="form-label"
+                        >Email Body</label
+                      >
+                      <textarea
+                        class="form-control"
+                        id="batchBody"
+                        name="body"
+                        rows="6"
+                        required
+                      ></textarea>
+                      <div class="help-text mt-1">
+                        Use {{name}} to personalize emails with prospect's first
+                        name (uses 'First_Name' field from CSV). Use {{Company}}
+                        to include the company name.
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      class="btn btn-primary"
+                      id="batchSendButton"
+                    >
+                      <span id="batchSendButtonText">Send Batch Emails</span>
+                      <span
+                        id="batchSendButtonSpinner"
+                        class="spinner-border spinner-border-sm d-none"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </form>
+                </div>
+
+                <div
+                  class="tab-pane fade"
+                  id="single-tab-pane"
+                  role="tabpanel"
+                  aria-labelledby="single-tab"
+                  tabindex="0"
+                >
+                  <!-- Single Email Form -->
+                  <form id="singleEmailForm">
+                    <div class="mb-3">
+                      <label for="singleEmail" class="form-label"
+                        >Recipient Email</label
+                      >
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="singleEmail"
+                        name="email"
+                        required
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="singleName" class="form-label"
+                        >Recipient Name (Optional)</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="singleName"
+                        name="name"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="singleCompany" class="form-label"
+                        >Company Name (Optional)</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="singleCompany"
+                        name="company"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="singleSubject" class="form-label"
+                        >Email Subject</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="singleSubject"
+                        name="subject"
+                        required
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="singleBody" class="form-label"
+                        >Email Body</label
+                      >
+                      <textarea
+                        class="form-control"
+                        id="singleBody"
+                        name="body"
+                        rows="6"
+                        required
+                      ></textarea>
+                      <div class="help-text mt-1">
+                        Use {{name}} to personalize email with recipient's name.
+                        Use {{Company}} to include the company name.
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="singleAttachment" class="form-label"
+                        >Attachment (Optional)</label
+                      >
+                      <input
+                        type="file"
+                        class="form-control"
+                        id="singleAttachment"
+                        name="attachment"
+                      />
+                      <div class="help-text mt-1">
+                        Attach a file to your email (max 10MB).
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      class="btn btn-primary"
+                      id="singleSendButton"
+                    >
+                      <span id="singleSendButtonText">Send Email</span>
+                      <span
+                        id="singleSendButtonSpinner"
+                        class="spinner-border spinner-border-sm d-none"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card d-none" id="resultsCard">
+            <div class="card-header">
+              <h3 class="mb-0">Results</h3>
+            </div>
+            <div class="card-body results">
+              <div class="alert alert-info mb-3">
+                <span id="summaryText"></span>
+              </div>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Message</th>
+                  </tr>
+                </thead>
+                <tbody id="resultsBody">
+                  <!-- Results will be displayed here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Batch email elements
+        const batchEmailForm = document.getElementById("batchEmailForm");
+        const batchSendButton = document.getElementById("batchSendButton");
+        const batchSendButtonText = document.getElementById(
+          "batchSendButtonText"
+        );
+        const batchSendButtonSpinner = document.getElementById(
+          "batchSendButtonSpinner"
+        );
+
+        // Single email elements
+        const singleEmailForm = document.getElementById("singleEmailForm");
+        const singleSendButton = document.getElementById("singleSendButton");
+        const singleSendButtonText = document.getElementById(
+          "singleSendButtonText"
+        );
+        const singleSendButtonSpinner = document.getElementById(
+          "singleSendButtonSpinner"
+        );
+
+        // Results elements
+        const resultsCard = document.getElementById("resultsCard");
+        const resultsBody = document.getElementById("resultsBody");
+        const summaryText = document.getElementById("summaryText");
+
+        // Batch email form submission
+        batchEmailForm.addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          // Show loading state
+          batchSendButtonText.textContent = "Sending...";
+          batchSendButtonSpinner.classList.remove("d-none");
+          batchSendButton.disabled = true;
+          resultsCard.classList.add("d-none");
+
+          const formData = new FormData(batchEmailForm);
+
+          try {
+            const response = await fetch("/api/send-emails", {
+              method: "POST",
+              body: formData,
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              displayResults(data.results);
+            } else {
+              const errorMessage = data.message || "Unknown error";
+              if (errorMessage.includes("Email service not configured")) {
+                showConfigError();
+              } else {
+                alert("Error: " + errorMessage);
+              }
+            }
+          } catch (error) {
+            alert("An error occurred: " + error.message);
+          } finally {
+            // Reset button state
+            batchSendButtonText.textContent = "Send Batch Emails";
+            batchSendButtonSpinner.classList.add("d-none");
+            batchSendButton.disabled = false;
+          }
+        });
+
+        // Single email form submission
+        singleEmailForm.addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          // Show loading state
+          singleSendButtonText.textContent = "Sending...";
+          singleSendButtonSpinner.classList.remove("d-none");
+          singleSendButton.disabled = true;
+          resultsCard.classList.add("d-none");
+
+          // Create form data and add all fields
+          const formData = new FormData();
+          formData.append(
+            "email",
+            document.getElementById("singleEmail").value
+          );
+          formData.append(
+            "name",
+            document.getElementById("singleName").value || ""
+          );
+          formData.append(
+            "company",
+            document.getElementById("singleCompany").value || ""
+          );
+          formData.append(
+            "subject",
+            document.getElementById("singleSubject").value
+          );
+          formData.append("body", document.getElementById("singleBody").value);
+
+          // Add file if selected
+          const fileInput = document.getElementById("singleAttachment");
+          if (fileInput.files.length > 0) {
+            formData.append("attachment", fileInput.files[0]);
+          }
+
+          try {
+            const response = await fetch("/api/send-single-email", {
+              method: "POST",
+              body: formData,
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              displayResults([data.result]);
+            } else {
+              const errorMessage = data.message || "Unknown error";
+              if (errorMessage.includes("Email service not configured")) {
+                showConfigError();
+              } else {
+                alert("Error: " + errorMessage);
+              }
+            }
+          } catch (error) {
+            alert("An error occurred: " + error.message);
+          } finally {
+            // Reset button state
+            singleSendButtonText.textContent = "Send Email";
+            singleSendButtonSpinner.classList.add("d-none");
+            singleSendButton.disabled = false;
+          }
+        });
+
+        function showConfigError() {
+          resultsCard.classList.remove("d-none");
+          resultsBody.innerHTML = "";
+          summaryText.innerHTML = `
+            <strong>Email Configuration Error</strong><br>
+            The email service is not properly configured. Please check the server logs and update the .env file with valid email credentials.<br><br>
+            <strong>For Gmail Setup:</strong><br>
+            1. Use your Gmail address as EMAIL_USER<br>
+            2. For EMAIL_PASS, use an App Password (not your regular password)<br>
+            3. To generate an App Password:<br>
+            &nbsp;&nbsp;&nbsp;- Enable 2-Step Verification on your Google account<br>
+            &nbsp;&nbsp;&nbsp;- Go to <a href="https://myaccount.google.com/apppasswords" target="_blank">Google App Passwords</a><br>
+            &nbsp;&nbsp;&nbsp;- Select "Mail" and your device<br>
+            &nbsp;&nbsp;&nbsp;- Use the generated password in your .env file
+          `;
+        }
+
+        function displayResults(results) {
+          // Clear previous results
+          resultsBody.innerHTML = "";
+
+          // Count successes and failures
+          const successful = results.filter(
+            (r) => r.status === "Success"
+          ).length;
+          const failed = results.length - successful;
+
+          // Update summary text
+          summaryText.textContent = `Successfully sent ${successful} email${
+            successful !== 1 ? "s" : ""
+          }. Failed to send ${failed} email${failed !== 1 ? "s" : ""}.`;
+
+          // Add each result to the table
+          results.forEach((result) => {
+            const row = document.createElement("tr");
+
+            if (result.status === "Failed") {
+              row.classList.add("table-danger");
+            } else {
+              row.classList.add("table-success");
+            }
+
+            row.innerHTML = `
+            <td>${result.email}</td>
+            <td>${result.status}</td>
+            <td>${result.message}</td>
+          `;
+
+            resultsBody.appendChild(row);
+          });
+
+          // Show results card
+          resultsCard.classList.remove("d-none");
+        }
+      });
+    </script>
+    <!-- Bootstrap JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
