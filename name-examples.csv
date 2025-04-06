@@ -1,0 +1,15 @@
+email,First_Name,last_name,company
+john@example.com,John,Smith,ABC Corp
+jane@example.com,Jane,Doe,XYZ Inc
+
+email,firstname,lastname,company
+robert@example.com,Robert,Johnson,123 Systems
+sarah@example.com,Sarah,Williams,Tech Corp
+
+email,fname,lname,company
+mike@example.com,Mike,Brown,Global Solutions
+lisa@example.com,Lisa,Taylor,Innovative Inc
+
+email,name,company
+david@example.com,David,Enterprise Ltd
+emma@example.com,Emma,Future Systems 

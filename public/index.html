@@ -91,6 +91,73 @@
                 >
                   <!-- Batch Email Form -->
                   <form id="batchEmailForm">
+                    <div class="mb-3 form-check">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="batchUseCustomCredentials"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="batchUseCustomCredentials"
+                        >Use my own email credentials</label
+                      >
+                    </div>
+
+                    <div id="batchCredentialsFields" class="card mb-3 d-none">
+                      <div class="card-body">
+                        <h6 class="card-subtitle mb-3 text-muted">
+                          Email Credentials
+                        </h6>
+                        <div class="mb-3">
+                          <label for="batchEmailService" class="form-label"
+                            >Email Service</label
+                          >
+                          <select
+                            class="form-select"
+                            id="batchEmailService"
+                            name="emailService"
+                          >
+                            <option value="gmail">Gmail</option>
+                            <option value="outlook">Outlook</option>
+                            <option value="yahoo">Yahoo</option>
+                            <option value="hotmail">Hotmail</option>
+                          </select>
+                        </div>
+                        <div class="mb-3">
+                          <label for="batchEmailUser" class="form-label"
+                            >Email Address</label
+                          >
+                          <input
+                            type="email"
+                            class="form-control"
+                            id="batchEmailUser"
+                            name="emailUser"
+                          />
+                        </div>
+                        <div class="mb-3">
+                          <label for="batchEmailPass" class="form-label"
+                            >App Password</label
+                          >
+                          <input
+                            type="password"
+                            class="form-control"
+                            id="batchEmailPass"
+                            name="emailPass"
+                          />
+                          <div class="help-text mt-1">
+                            For Gmail, use an App Password (not your regular
+                            password).
+                            <a
+                              href="https://support.google.com/accounts/answer/185833"
+                              target="_blank"
+                              >How to create an App Password</a
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <div class="mb-3">
                       <label for="prospects" class="form-label"
                         >Upload Prospects CSV</label
@@ -104,9 +171,11 @@
                         required
                       />
                       <div class="help-text mt-1">
-                        CSV should have at least 'email' column. Optional
-                        'First_Name' (or 'name'), and 'company' columns for
-                        personalization.
+                        CSV should have at least 'email' column. For name
+                        personalization, include any of these columns:
+                        'First_Name', 'first_name', 'firstname', 'fname',
+                        'name', or 'last_name'. Include 'company' column for
+                        company personalization.
                       </div>
                     </div>
 
@@ -150,9 +219,10 @@
                         required
                       ></textarea>
                       <div class="help-text mt-1">
-                        Use {{name}} to personalize emails with prospect's first
-                        name (uses 'First_Name' field from CSV). Use {{Company}}
-                        to include the company name.
+                        Use {{name}} to personalize emails with recipient's name
+                        (will try to use First_Name, firstname, fname, name, or
+                        last_name from CSV). Use {{Company}} to include the
+                        company name.
                       </div>
                     </div>
 
@@ -181,6 +251,73 @@
                 >
                   <!-- Single Email Form -->
                   <form id="singleEmailForm">
+                    <div class="mb-3 form-check">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="singleUseCustomCredentials"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="singleUseCustomCredentials"
+                        >Use my own email credentials</label
+                      >
+                    </div>
+
+                    <div id="singleCredentialsFields" class="card mb-3 d-none">
+                      <div class="card-body">
+                        <h6 class="card-subtitle mb-3 text-muted">
+                          Email Credentials
+                        </h6>
+                        <div class="mb-3">
+                          <label for="singleEmailService" class="form-label"
+                            >Email Service</label
+                          >
+                          <select
+                            class="form-select"
+                            id="singleEmailService"
+                            name="emailService"
+                          >
+                            <option value="gmail">Gmail</option>
+                            <option value="outlook">Outlook</option>
+                            <option value="yahoo">Yahoo</option>
+                            <option value="hotmail">Hotmail</option>
+                          </select>
+                        </div>
+                        <div class="mb-3">
+                          <label for="singleEmailUser" class="form-label"
+                            >Email Address</label
+                          >
+                          <input
+                            type="email"
+                            class="form-control"
+                            id="singleEmailUser"
+                            name="emailUser"
+                          />
+                        </div>
+                        <div class="mb-3">
+                          <label for="singleEmailPass" class="form-label"
+                            >App Password</label
+                          >
+                          <input
+                            type="password"
+                            class="form-control"
+                            id="singleEmailPass"
+                            name="emailPass"
+                          />
+                          <div class="help-text mt-1">
+                            For Gmail, use an App Password (not your regular
+                            password).
+                            <a
+                              href="https://support.google.com/accounts/answer/185833"
+                              target="_blank"
+                              >How to create an App Password</a
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <div class="mb-3">
                       <label for="singleEmail" class="form-label"
                         >Recipient Email</label
@@ -319,6 +456,12 @@
         const batchSendButtonSpinner = document.getElementById(
           "batchSendButtonSpinner"
         );
+        const batchUseCustomCredentials = document.getElementById(
+          "batchUseCustomCredentials"
+        );
+        const batchCredentialsFields = document.getElementById(
+          "batchCredentialsFields"
+        );
 
         // Single email elements
         const singleEmailForm = document.getElementById("singleEmailForm");
@@ -329,11 +472,40 @@
         const singleSendButtonSpinner = document.getElementById(
           "singleSendButtonSpinner"
         );
+        const singleUseCustomCredentials = document.getElementById(
+          "singleUseCustomCredentials"
+        );
+        const singleCredentialsFields = document.getElementById(
+          "singleCredentialsFields"
+        );
 
         // Results elements
         const resultsCard = document.getElementById("resultsCard");
         const resultsBody = document.getElementById("resultsBody");
         const summaryText = document.getElementById("summaryText");
+
+        // Toggle credential fields visibility
+        batchUseCustomCredentials.addEventListener("change", function () {
+          batchCredentialsFields.classList.toggle("d-none", !this.checked);
+
+          // Make fields required when visible
+          const fields =
+            batchCredentialsFields.querySelectorAll("input, select");
+          fields.forEach((field) => {
+            field.required = this.checked;
+          });
+        });
+
+        singleUseCustomCredentials.addEventListener("change", function () {
+          singleCredentialsFields.classList.toggle("d-none", !this.checked);
+
+          // Make fields required when visible
+          const fields =
+            singleCredentialsFields.querySelectorAll("input, select");
+          fields.forEach((field) => {
+            field.required = this.checked;
+          });
+        });
 
         // Batch email form submission
         batchEmailForm.addEventListener("submit", async function (e) {
@@ -346,9 +518,13 @@
           resultsCard.classList.add("d-none");
 
           const formData = new FormData(batchEmailForm);
+          const useCustomCredentials = batchUseCustomCredentials.checked;
+          const endpoint = useCustomCredentials
+            ? "/api/send-emails-custom"
+            : "/api/send-emails";
 
           try {
-            const response = await fetch("/api/send-emails", {
+            const response = await fetch(endpoint, {
               method: "POST",
               body: formData,
             });
@@ -359,7 +535,10 @@
               displayResults(data.results);
             } else {
               const errorMessage = data.message || "Unknown error";
-              if (errorMessage.includes("Email service not configured")) {
+              if (
+                errorMessage.includes("Email service not configured") &&
+                !useCustomCredentials
+              ) {
                 showConfigError();
               } else {
                 alert("Error: " + errorMessage);
@@ -386,33 +565,14 @@
           resultsCard.classList.add("d-none");
 
           // Create form data and add all fields
-          const formData = new FormData();
-          formData.append(
-            "email",
-            document.getElementById("singleEmail").value
-          );
-          formData.append(
-            "name",
-            document.getElementById("singleName").value || ""
-          );
-          formData.append(
-            "company",
-            document.getElementById("singleCompany").value || ""
-          );
-          formData.append(
-            "subject",
-            document.getElementById("singleSubject").value
-          );
-          formData.append("body", document.getElementById("singleBody").value);
-
-          // Add file if selected
-          const fileInput = document.getElementById("singleAttachment");
-          if (fileInput.files.length > 0) {
-            formData.append("attachment", fileInput.files[0]);
-          }
+          const formData = new FormData(singleEmailForm);
+          const useCustomCredentials = singleUseCustomCredentials.checked;
+          const endpoint = useCustomCredentials
+            ? "/api/send-single-email-custom"
+            : "/api/send-single-email";
 
           try {
-            const response = await fetch("/api/send-single-email", {
+            const response = await fetch(endpoint, {
               method: "POST",
               body: formData,
             });
@@ -423,7 +583,10 @@
               displayResults([data.result]);
             } else {
               const errorMessage = data.message || "Unknown error";
-              if (errorMessage.includes("Email service not configured")) {
+              if (
+                errorMessage.includes("Email service not configured") &&
+                !useCustomCredentials
+              ) {
                 showConfigError();
               } else {
                 alert("Error: " + errorMessage);
@@ -444,7 +607,9 @@
           resultsBody.innerHTML = "";
           summaryText.innerHTML = `
             <strong>Email Configuration Error</strong><br>
-            The email service is not properly configured. Please check the server logs and update the .env file with valid email credentials.<br><br>
+            The server's email service is not properly configured. You have two options:<br><br>
+            <strong>Option 1:</strong> Check the "Use my own email credentials" box and provide your own email credentials.<br><br>
+            <strong>Option 2:</strong> Ask the administrator to update the server's .env file with valid email credentials.<br><br>
             <strong>For Gmail Setup:</strong><br>
             1. Use your Gmail address as EMAIL_USER<br>
             2. For EMAIL_PASS, use an App Password (not your regular password)<br>
